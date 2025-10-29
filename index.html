@@ -87,6 +87,12 @@ input{
   display:none;
   animation:glow 1s ease-in-out infinite alternate;
 }
+#correctAnswer{
+  font-size:20px;
+  color:#aef3ff;
+  margin-top:10px;
+  display:none;
+}
 @keyframes glow{
   from{text-shadow:0 0 10px #00e6ff;}
   to{text-shadow:0 0 25px #00e6ff,0 0 40px #00e6ff;}
@@ -107,11 +113,12 @@ input{
     </div>
     <div>
       <label>Player 2:</label><br>
-      <input type="text" id="answer2" placeholder="Jawaban pemain  2">
+      <input type="text" id="answer2" placeholder="Jawaban Pemain 2">
     </div>
 
     <button id="checkBtn" class="btn">CEK HASIL</button>
     <p id="resultText" class="result"></p>
+    <p id="correctAnswer"></p>
     <button id="nextBtn" class="btn" style="display:none;">DUEL LAGI</button>
   </div>
 </div>
@@ -166,6 +173,7 @@ const duelBtn=document.getElementById("duelBtn");
 const questionBox=document.getElementById("questionBox");
 const questionText=document.getElementById("questionText");
 const resultText=document.getElementById("resultText");
+const correctAnswer=document.getElementById("correctAnswer");
 const answer1=document.getElementById("answer1");
 const answer2=document.getElementById("answer2");
 const checkBtn=document.getElementById("checkBtn");
@@ -178,6 +186,7 @@ duelBtn.addEventListener("click",()=>{
   duelBtn.style.display="none";
   questionBox.style.display="block";
   resultText.style.display="none";
+  correctAnswer.style.display="none";
   nextBtn.style.display="none";
   const random=data[Math.floor(Math.random()*data.length)];
   currentQ=random;
@@ -220,6 +229,11 @@ checkBtn.addEventListener("click",()=>{
 
   resultText.textContent=result;
   resultText.style.display="block";
+
+  // 🔹 Tampilkan jawaban benar di bawah hasil
+  correctAnswer.textContent="✅ Jawaban yang benar: " + currentQ.a;
+  correctAnswer.style.display="block";
+
   nextBtn.style.display="inline-block";
 });
 
