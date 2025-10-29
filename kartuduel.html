@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kartu Duel ⚔️</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Poppins",sans-serif;
+}
+body{
+  height:100vh;
+  overflow:hidden;
+  background:linear-gradient(-45deg,#08292e,#0d232d,#110057,#86b8dc);
+  background-size:400% 400%;
+  animation:gradientBG 12s ease infinite;
+  color:#fff;
+  position:relative;
+}
+@keyframes gradientBG{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+.container{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  width:90%;
+  max-width:700px;
+}
+h1{
+  font-size:34px;
+  letter-spacing:2px;
+  color:#fff;
+  text-shadow:0 0 15px rgba(0,200,255,0.6);
+  margin-bottom:30px;
+}
+.btn{
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  border:none;
+  color:white;
+  padding:16px 40px;
+  font-size:20px;
+  border-radius:50px;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 0 25px rgba(0,114,255,0.5);
+  margin:10px;
+}
+.btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 40px rgba(0,114,255,0.8);
+}
+.question-box{
+  display:none;
+  background:rgba(255,255,255,0.1);
+  border-radius:20px;
+  padding:30px;
+  backdrop-filter:blur(8px);
+  box-shadow:0 0 30px rgba(0,0,0,0.4);
+  animation:fadeIn 0.8s ease forwards;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(0.8);}
+  to{opacity:1;transform:scale(1);}
+}
+input{
+  width:80%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:10px;
+  outline:none;
+  font-size:18px;
+  text-align:center;
+}
+.result{
+  font-size:30px;
+  margin-top:20px;
+  text-shadow:0 0 20px rgba(0,255,255,0.8);
+  display:none;
+  animation:glow 1s ease-in-out infinite alternate;
+}
+@keyframes glow{
+  from{text-shadow:0 0 10px #00e6ff;}
+  to{text-shadow:0 0 25px #00e6ff,0 0 40px #00e6ff;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>KARTU DUEL SOAL ⚔️</h1>
+  <button id="duelBtn" class="btn">DUEL!</button>
+
+  <div id="questionBox" class="question-box">
+    <p id="questionText" style="font-size:20px;margin-bottom:20px;"></p>
+
+    <div>
+      <label>Player 1:</label><br>
+      <input type="text" id="answer1" placeholder="Jawaban Pemain 1">
+    </div>
+    <div>
+      <label>Player 2:</label><br>
+      <input type="text" id="answer2" placeholder="Jawaban pemain  2">
+    </div>
+
+    <button id="checkBtn" class="btn">CEK HASIL</button>
+    <p id="resultText" class="result"></p>
+    <button id="nextBtn" class="btn" style="display:none;">DUEL LAGI</button>
+  </div>
+</div>
+
+<script>
+const data = [
+  // LEVEL 1 – MUDAH
+  { q: "Dalam sebuah dadu terdapat 6 sisi. Ada berapa cara munculnya satu angka jika dadu dilempar sekali?", a: "6" },
+  { q: "Sebuah koin dilempar dua kali. Banyaknya kemungkinan hasil yang muncul adalah …", a: "4" },
+  { q: "Tiga lampu disusun berurutan, masing-masing bisa berwarna merah, kuning, atau hijau. Ada berapa susunan warna yang mungkin?", a: "27" },
+  { q: "Sebuah toko menjual 5 jenis minuman dan 3 jenis makanan. Jika seseorang membeli 1 minuman dan 1 makanan, ada berapa cara memilihnya?", a: "15" },
+  { q: "Dalam suatu ujian, siswa harus memilih 1 dari 4 soal bagian A dan 1 dari 3 soal bagian B. Berapa jumlah kombinasi soal yang dapat dipilih?", a: "12" },
+  { q: "Ada 4 jalur dari kota A ke B dan 3 jalur dari B ke C. Berapa banyak cara pergi dari A ke C melalui B?", a: "12" },
+  { q: "Sebuah password terdiri dari 2 huruf dan 1 angka. Jika huruf bisa diulang dan angka dari 0–9, berapa banyak kemungkinan password yang terbentuk?", a: "6760" },
+  { q: "Dari angka 1–5, dapat dibentuk berapa bilangan dua angka yang berbeda?", a: "20" },
+  { q: "Dalam sebuah kelas terdapat 6 siswa laki-laki dan 4 perempuan. Jika dipilih 1 siswa, berapa kemungkinan yang ada?", a: "10" },
+  { q: "Dalam undian, terdapat 10 kupon bernomor 1–10. Jika satu kupon diambil acak, berapa banyak hasil yang mungkin?", a: "10" },
+  { q: "Berapa banyak bilangan tiga angka yang dapat dibentuk dari angka 1, 2, 3, dan 4 tanpa pengulangan?", a: "24" },
+  { q: "Sebuah dadu dan sebuah koin dilempar bersamaan. Banyaknya hasil yang mungkin adalah …", a: "12" },
+  { q: "Dalam 5 jenis buku, berapa banyak cara memilih satu buku untuk dibaca?", a: "5" },
+  { q: "Dari 8 siswa, berapa banyak cara memilih ketua kelas?", a: "8" },
+  { q: "Terdapat 4 jenis lauk dan 3 jenis sayur. Seseorang ingin makan 1 lauk dan 1 sayur. Berapa banyak kombinasi makanannya?", a: "12" },
+
+  // LEVEL 2 – SEDANG
+  { q: "Huruf-huruf pada kata “MATH” dapat disusun menjadi berapa kata berbeda?", a: "24" },
+  { q: "Dari angka 1–5, berapa banyak bilangan tiga angka berbeda yang dapat dibentuk dan lebih besar dari 400?", a: "24" },
+  { q: "Dalam sebuah perlombaan, terdapat 10 peserta. Berapa banyak cara memilih juara 1, 2, dan 3?", a: "720" },
+  { q: "Berapa banyak cara menyusun 6 siswa secara berbaris?", a: "720" },
+  { q: "Dari 10 orang, akan dibentuk tim beranggotakan 4 orang. Berapa banyak cara pembentukan tim itu?", a: "210" },
+  { q: "Dalam sebuah kelas ada 8 siswa laki-laki dan 7 siswa perempuan. Berapa banyak cara memilih 2 laki-laki dan 2 perempuan untuk lomba cerdas cermat?", a: "588" },
+  { q: "Huruf-huruf pada kata “STATISTIK” dapat disusun dalam berapa cara berbeda?", a: "15120" },
+  { q: "Sebuah kode keamanan terdiri dari 3 huruf diikuti 2 angka. Jika huruf dan angka tidak boleh diulang, berapa banyak kode yang mungkin?", a: "15444000" },
+  { q: "Dari 7 jenis buah, berapa banyak cara memilih 3 jenis buah berbeda untuk jus campur?", a: "35" },
+  { q: "Berapa banyak cara duduk 5 orang di kursi melingkar?", a: "24" },
+  { q: "Dalam undian, dari 12 nama akan dipilih 3 pemenang tanpa urutan. Berapa banyak kombinasi yang mungkin?", a: "220" },
+  { q: "Sebuah kartu angka dari 1–9 akan dipilih 2 angka untuk membentuk bilangan dua digit. Berapa banyak bilangan genap yang dapat dibuat tanpa pengulangan angka?", a: "32" },
+  { q: "Berapa banyak cara menyusun huruf “KOMBINASI” bila huruf I dianggap sama?", a: "181440" },
+  { q: "Dalam rapat OSIS, terdapat 5 kandidat ketua dan 4 kandidat sekretaris. Berapa cara memilih pasangan ketua dan sekretaris?", a: "20" },
+  { q: "Dari 9 anggota, akan dipilih ketua, wakil, dan bendahara. Berapa cara susunannya?", a: "504" },
+
+  // LEVEL 3 – SULIT
+  { q: "Sebuah bilangan lima angka dibentuk dari angka 1–7 tanpa pengulangan dan harus ganjil. Berapa banyak bilangan yang dapat dibentuk?", a: "1440" },
+  { q: "Dari 8 siswa, akan dibentuk tim debat berisi 3 orang dan tim tari berisi 2 orang, tanpa ada siswa yang sama di dua tim. Berapa banyak cara memilihnya?", a: "560" },
+  { q: "Huruf-huruf dalam kata “PERMUTASI” akan disusun sehingga kedua huruf “I” tidak bersebelahan. Berapa banyak susunan yang mungkin?", a: "362880" },
+  { q: "Dari 10 kursi dalam satu baris, 4 akan ditempati siswa. Berapa banyak cara duduk yang dapat dibentuk jika dua siswa tertentu tidak boleh bersebelahan?", a: "4704" },
+  { q: "Dalam ujian, siswa harus menjawab 8 dari 10 soal. Berapa banyak kombinasi pilihan soal yang dapat diambil jika soal nomor 1 wajib dijawab?", a: "36" },
+  { q: "Sebuah kata sandi terdiri dari 4 huruf berbeda diikuti 2 angka berbeda. Jika hanya huruf A–Z dan angka 0–9 yang digunakan, berapa banyak kata sandi dapat dibuat?", a: "32292000" },
+  { q: "Dari 12 pemain, dipilih 5 untuk tim utama dan 2 untuk cadangan. Berapa banyak cara pemilihannya?", a: "16632" },
+];
+
+const duelBtn=document.getElementById("duelBtn");
+const questionBox=document.getElementById("questionBox");
+const questionText=document.getElementById("questionText");
+const resultText=document.getElementById("resultText");
+const answer1=document.getElementById("answer1");
+const answer2=document.getElementById("answer2");
+const checkBtn=document.getElementById("checkBtn");
+const nextBtn=document.getElementById("nextBtn");
+
+let currentQ=null;
+let time1=null,time2=null;
+
+duelBtn.addEventListener("click",()=>{
+  duelBtn.style.display="none";
+  questionBox.style.display="block";
+  resultText.style.display="none";
+  nextBtn.style.display="none";
+  const random=data[Math.floor(Math.random()*data.length)];
+  currentQ=random;
+  questionText.textContent=random.q;
+  answer1.value="";
+  answer2.value="";
+  time1=null; time2=null;
+});
+
+answer1.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter"&&time1===null){
+    time1=Date.now();
+  }
+});
+answer2.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter"&&time2===null){
+    time2=Date.now();
+  }
+});
+
+checkBtn.addEventListener("click",()=>{
+  if(!currentQ) return;
+  const a1=answer1.value.trim().toLowerCase();
+  const a2=answer2.value.trim().toLowerCase();
+  const correct=currentQ.a.toLowerCase();
+
+  const p1correct=a1.includes(correct);
+  const p2correct=a2.includes(correct);
+
+  let result="";
+  if(p1correct&&p2correct){
+    if(time1 && time2){
+      if(time1<time2) result="🏆 Player 1 MENANG (lebih cepat)!";
+      else if(time2<time1) result="🏆 Player 2 MENANG (lebih cepat)!";
+      else result="⚔️ Sama kuat!";
+    }else result="⚔️ Sama kuat!";
+  }else if(p1correct) result="🏆 Player 1 MENANG!";
+  else if(p2correct) result="🏆 Player 2 MENANG!";
+  else result="❌ Sama-sama salah!";
+
+  resultText.textContent=result;
+  resultText.style.display="block";
+  nextBtn.style.display="inline-block";
+});
+
+nextBtn.addEventListener("click",()=>{
+  questionBox.style.display="none";
+  duelBtn.style.display="inline-block";
+});
+</script>
+</body>
+</html>
