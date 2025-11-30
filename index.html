@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kartu Duel ⚔️</title>
+
 <style>
 *{
   margin:0;
@@ -79,6 +80,7 @@ input{
   outline:none;
   font-size:18px;
   text-align:center;
+  -webkit-text-security: disc; /* sensor jadi *** */
 }
 .result{
   font-size:30px;
@@ -100,6 +102,7 @@ input{
 </style>
 </head>
 <body>
+
 <div class="container">
   <h1>KARTU DUEL ⚔️</h1>
   <button id="duelBtn" class="btn">DUEL!</button>
@@ -111,17 +114,21 @@ input{
       <label>Player 1:</label><br>
       <input type="text" id="answer1" placeholder="Jawaban Pemain 1">
     </div>
+
     <div>
       <label>Player 2:</label><br>
       <input type="text" id="answer2" placeholder="Jawaban Pemain 2">
     </div>
 
     <button id="checkBtn" class="btn">CEK HASIL</button>
+
     <p id="resultText" class="result"></p>
     <p id="correctAnswer"></p>
+
     <button id="nextBtn" class="btn" style="display:none;">DUEL LAGI</button>
   </div>
 </div>
+
 
 <script>
 const data = [
@@ -150,7 +157,7 @@ const data = [
   { q: "Dari 10 orang, akan dibentuk tim beranggotakan 4 orang. Berapa banyak cara pembentukan tim itu?", a: "210" },
   { q: "Dalam sebuah kelas ada 8 siswa laki-laki dan 7 siswa perempuan. Berapa banyak cara memilih 2 laki-laki dan 2 perempuan untuk lomba cerdas cermat?", a: "588" },
   { q: "Huruf-huruf pada kata “STATISTIK” dapat disusun dalam berapa cara berbeda?", a: "15120" },
-  { q: "Sebuah kode keamanan terdiri dari 3 huruf diikuti 2 angka. Jika huruf dan angka tidak boleh diulang, berapa banyak kode yang mungkin?", a: "15444000" },
+  { q: "Sebuah kode keamanan terdiri dari 3 huruf diikuti 2 angka. Jika huruf dan angka tidak boleh diulang, berapa banyak kode yang mungkin?", a: "1404000" },
   { q: "Dari 7 jenis buah, berapa banyak cara memilih 3 jenis buah berbeda untuk jus campur?", a: "35" },
   { q: "Berapa banyak cara duduk 5 orang di kursi melingkar?", a: "24" },
   { q: "Dalam undian, dari 12 nama akan dipilih 3 pemenang tanpa urutan. Berapa banyak kombinasi yang mungkin?", a: "220" },
@@ -162,85 +169,118 @@ const data = [
   // LEVEL 3 – SULIT
   { q: "Sebuah bilangan lima angka dibentuk dari angka 1–7 tanpa pengulangan dan harus ganjil. Berapa banyak bilangan yang dapat dibentuk?", a: "1440" },
   { q: "Dari 8 siswa, akan dibentuk tim debat berisi 3 orang dan tim tari berisi 2 orang, tanpa ada siswa yang sama di dua tim. Berapa banyak cara memilihnya?", a: "560" },
-  { q: "Huruf-huruf dalam kata “PERMUTASI” akan disusun sehingga kedua huruf “I” tidak bersebelahan. Berapa banyak susunan yang mungkin?", a: "362880" },
-  { q: "Dari 10 kursi dalam satu baris, 4 akan ditempati siswa. Berapa banyak cara duduk yang dapat dibentuk jika dua siswa tertentu tidak boleh bersebelahan?", a: "4704" },
+  { q: "Dari 10 kursi dalam satu baris, 4 akan ditempati siswa. Berapa banyak cara duduk yang dapat dibentuk jika dua siswa tertentu tidak boleh bersebelahan?", a: "4032" },
   { q: "Dalam ujian, siswa harus menjawab 8 dari 10 soal. Berapa banyak kombinasi pilihan soal yang dapat diambil jika soal nomor 1 wajib dijawab?", a: "36" },
   { q: "Sebuah kata sandi terdiri dari 4 huruf berbeda diikuti 2 angka berbeda. Jika hanya huruf A–Z dan angka 0–9 yang digunakan, berapa banyak kata sandi dapat dibuat?", a: "32292000" },
   { q: "Dari 12 pemain, dipilih 5 untuk tim utama dan 2 untuk cadangan. Berapa banyak cara pemilihannya?", a: "16632" },
 ];
 
-const duelBtn=document.getElementById("duelBtn");
-const questionBox=document.getElementById("questionBox");
-const questionText=document.getElementById("questionText");
-const resultText=document.getElementById("resultText");
-const correctAnswer=document.getElementById("correctAnswer");
-const answer1=document.getElementById("answer1");
-const answer2=document.getElementById("answer2");
-const checkBtn=document.getElementById("checkBtn");
-const nextBtn=document.getElementById("nextBtn");
+const duelBtn = document.getElementById("duelBtn");
+const questionBox = document.getElementById("questionBox");
+const questionText = document.getElementById("questionText");
+const answer1 = document.getElementById("answer1");
+const answer2 = document.getElementById("answer2");
+const checkBtn = document.getElementById("checkBtn");
+const resultText = document.getElementById("resultText");
+const correctAnswer = document.getElementById("correctAnswer");
+const nextBtn = document.getElementById("nextBtn");
 
-let currentQ=null;
-let time1=null,time2=null;
+let currentQ = null;
+let time1 = null;
+let time2 = null;
+let finished1 = false;
+let finished2 = false;
 
-duelBtn.addEventListener("click",()=>{
-  duelBtn.style.display="none";
-  questionBox.style.display="block";
-  resultText.style.display="none";
-  correctAnswer.style.display="none";
-  nextBtn.style.display="none";
-  const random=data[Math.floor(Math.random()*data.length)];
-  currentQ=random;
-  questionText.textContent=random.q;
-  answer1.value="";
-  answer2.value="";
-  time1=null; time2=null;
+
+duelBtn.addEventListener("click", () => {
+  duelBtn.style.display = "none";
+  questionBox.style.display = "block";
+
+  const random = data[Math.floor(Math.random() * data.length)];
+  currentQ = random;
+
+  questionText.textContent = random.q;
+
+  answer1.value = "";
+  answer2.value = "";
+  answer1.type = "password";
+  answer2.type = "password";
+
+  resultText.style.display = "none";
+  correctAnswer.style.display = "none";
+  nextBtn.style.display = "none";
+
+  time1 = null;
+  time2 = null;
+  finished1 = false;
+  finished2 = false;
 });
 
-answer1.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter"&&time1===null){
-    time1=Date.now();
+
+
+answer1.addEventListener("input", () => {
+  const correct = currentQ.a.trim().toLowerCase();
+  const val = answer1.value.trim().toLowerCase();
+
+  if (!finished1 && val === correct) {
+      finished1 = true;
+      time1 = Date.now();
   }
 });
-answer2.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter"&&time2===null){
-    time2=Date.now();
+
+
+answer2.addEventListener("input", () => {
+  const correct = currentQ.a.trim().toLowerCase();
+  const val = answer2.value.trim().toLowerCase();
+
+  if (!finished2 && val === correct) {
+      finished2 = true;
+      time2 = Date.now();
   }
 });
 
-checkBtn.addEventListener("click",()=>{
-  if(!currentQ) return;
-  const a1=answer1.value.trim().toLowerCase();
-  const a2=answer2.value.trim().toLowerCase();
-  const correct=currentQ.a.toLowerCase();
 
-  const p1correct=a1.includes(correct);
-  const p2correct=a2.includes(correct);
 
-  let result="";
-  if(p1correct&&p2correct){
-    if(time1 && time2){
-      if(time1<time2) result="🏆 Player 1 MENANG (lebih cepat)!";
-      else if(time2<time1) result="🏆 Player 2 MENANG (lebih cepat)!";
-      else result="⚔️ Sama kuat!";
-    }else result="⚔️ Sama kuat!";
-  }else if(p1correct) result="🏆 Player 1 MENANG!";
-  else if(p2correct) result="🏆 Player 2 MENANG!";
-  else result="❌ Sama-sama salah!";
+checkBtn.addEventListener("click", () => {
+  const correct = currentQ.a.trim().toLowerCase();
+  const p1 = answer1.value.trim().toLowerCase();
+  const p2 = answer2.value.trim().toLowerCase();
 
-  resultText.textContent=result;
-  resultText.style.display="block";
+  let result = "";
 
-  // 🔹 Tampilkan jawaban benar di bawah hasil
-  correctAnswer.textContent="✅ Jawaban yang benar: " + currentQ.a;
-  correctAnswer.style.display="block";
+  if (p1 === correct && p2 === correct) {
+      if (time1 < time2) result = "🏆 Player 1 MENANG (lebih cepat menjawab benar)!";
+      else if (time2 < time1) result = "🏆 Player 2 MENANG (lebih cepat menjawab benar)!";
+      else result = "⚔️ Keduanya menjawab benar di waktu yang sama!";
+  } 
+  else if (p1 === correct) result = "🏆 Player 1 MENANG!";
+  else if (p2 === correct) result = "🏆 Player 2 MENANG!";
+  else result = "❌ Dua-duanya SALAH!";
 
-  nextBtn.style.display="inline-block";
+  // tampilkan hasil
+  resultText.textContent = result;
+  resultText.style.display = "block";
+
+  // tampilkan jawaban asli pemain
+  answer1.type = "text";
+  answer2.type = "text";
+
+  correctAnswer.textContent = "✅ Jawaban benar: " + currentQ.a;
+  correctAnswer.style.display = "block";
+
+  nextBtn.style.display = "inline-block";
 });
 
-nextBtn.addEventListener("click",()=>{
-  questionBox.style.display="none";
-  duelBtn.style.display="inline-block";
+
+/* ------------------------------
+   NEXT DUEL
+--------------------------------*/
+nextBtn.addEventListener("click", () => {
+  questionBox.style.display = "none";
+  duelBtn.style.display = "inline-block";
 });
+
 </script>
 </body>
 </html>
+
